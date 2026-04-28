@@ -33,7 +33,14 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
         "session_id": payload.session_id or "default-session",
     }
 
-    result = await graph.ainvoke(state)
+    config = {
+        "configurable": {
+            "client_manager": request.app.state.client_manager,
+            "llm_service": request.app.state.llm_service,
+        }
+    }
+
+    result = await graph.ainvoke(state, config=config)
 
     return ChatResponse(
         query=payload.query,

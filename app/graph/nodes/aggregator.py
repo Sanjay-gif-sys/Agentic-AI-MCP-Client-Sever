@@ -1,7 +1,7 @@
 from app.schemas.state import AgentState
 
 
-async def aggregator_node(state: AgentState) -> AgentState:
+async def aggregator_node(state: AgentState) -> dict:
     results = state.get("mcp_results", {})
     parts = []
 
@@ -10,5 +10,4 @@ async def aggregator_node(state: AgentState) -> AgentState:
         for item in items:
             parts.append(f"- {item}")
 
-    state["aggregated_context"] = "\n".join(parts)
-    return state
+    return {"aggregated_context": "\n".join(parts)}

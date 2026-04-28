@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from app.api.routes import router
 from app.core.logging import configure_logging
 from app.core.config import get_settings
@@ -18,7 +19,10 @@ def create_app() -> FastAPI:
     )
 
     registry = MCPRegistry()
-    client_manager = MCPClientManager(registry=registry)
+    client_manager = MCPClientManager(
+        registry=registry,
+        server_configs=settings.mcp_servers,
+    )
     llm_service = LLMService()
 
     app.state.settings = settings
@@ -26,17 +30,20 @@ def create_app() -> FastAPI:
     app.state.client_manager = client_manager
     app.state.llm_service = llm_service
 
-    deps = {
+    app.state.graph = build_graph({
         "client_manager": client_manager,
         "llm_service": llm_service,
-    }
-    app.state.graph = build_graph(deps)
+    })
 
     app.include_router(router)
 
     @app.on_event("startup")
     async def startup_event() -> None:
         await client_manager.connect_servers()
+
+    @app.on_event("shutdown")
+    async def shutdown_event() -> None:
+        await client_manager.close()
 
     return app
 

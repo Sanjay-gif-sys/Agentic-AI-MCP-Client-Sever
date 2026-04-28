@@ -11,5 +11,5 @@ class JiraAdapter:
         return await self.client_manager.execute_tool(
             server_name=self.server_name,
             tool_name="get_blocked_tickets",
-            arguments={"query": query}
+            arguments={"query": query},
         )

@@ -1,12 +1,30 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
+from app.schemas.mcp import MCPServerConfig
+
 
 class Settings(BaseSettings):
     app_name: str = "MCP Agentic Assistant"
     app_version: str = "0.1.0"
-    openai_api_key: str = ""
-    model_name: str = "gpt-4o-mini"
+
+    mcp_servers: List[MCPServerConfig] = [
+        MCPServerConfig(
+            name="demo",
+            transport="stdio",
+            command="python",
+            args=["app/servers/demo_server.py"],
+            enabled=True,
+        ),
+        MCPServerConfig(
+            name="github",
+            transport="stdio",
+            command="python",
+            args=["app/servers/github_server.py"],
+            enabled=True,
+        ),
+        
+    ]
 
     model_config = SettingsConfigDict(
         env_file=".env",

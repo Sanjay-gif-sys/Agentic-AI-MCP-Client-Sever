@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Dict, Any, List
 from app.mcp.client_manager import MCPClientManager
 
 
@@ -7,9 +7,20 @@ class GitHubAdapter:
         self.client_manager = client_manager
         self.server_name = "github"
 
-    async def get_recent_prs(self, query: str) -> List[Dict[str, Any]]:
+    async def get_recent_prs(
+        self,
+        owner: str,
+        repo: str,
+        state: str = "open",
+        per_page: int = 5,
+    ) -> List[Dict[str, Any]]:
         return await self.client_manager.execute_tool(
             server_name=self.server_name,
             tool_name="list_pull_requests",
-            arguments={"query": query}
+            arguments={
+                "owner": owner,
+                "repo": repo,
+                "state": state,
+                "per_page": per_page,
+            },
         )
